@@ -13,6 +13,8 @@ module.exports.renderNewForm = (req, res) => {
     res.render("listings/new.ejs");
 };
 
+
+//Show Route
 module.exports.showListing = async(req, res) => {
     let { id } = req.params ;
     const listing = await Listing.findById(id)
@@ -31,6 +33,8 @@ module.exports.showListing = async(req, res) => {
     res.render("listings/show.ejs" , {listing});
 };
 
+
+//Create Route
 module.exports.createListing = async( req , res, next) => {
    let response = await geocodingClient.forwardGeocode({
         query: req.body.listing.location,
@@ -51,6 +55,8 @@ module.exports.createListing = async( req , res, next) => {
         res.redirect("/listings");
 };
 
+
+//Edit Route
 module.exports.renderEditForm = async(req , res) => {
     let {id} = req.params ;
     const listing = await Listing.findById(id);
@@ -65,6 +71,8 @@ module.exports.renderEditForm = async(req , res) => {
 
 };
 
+
+//Update Route
 module.exports.updateListing = async (req, res) => {
     let { id } = req.params;
     let listing = await Listing.findByIdAndUpdate(id , { ...req.body.listing});
@@ -79,6 +87,8 @@ module.exports.updateListing = async (req, res) => {
     res.redirect(`/listings/${id}`);
 };
 
+
+//Delete Route
 module.exports.destroyListing = async(req, res) => {
     let { id } = req.params;
     let deletedListing = await Listing.findByIdAndDelete(id);
@@ -86,3 +96,13 @@ module.exports.destroyListing = async(req, res) => {
     req.flash("success" , "Listing Deleted!");
     res.redirect("/listings");
 };
+
+//Search listing
+ module.exports.searchByCountry = async (req, res) => {
+     const { country} = req.query;
+     const listings = await Listing.find({
+         country : { $regex : new RegExp(country, 'i')}
+    });
+
+     res.render("listings/search" , {listings, country });
+ };
